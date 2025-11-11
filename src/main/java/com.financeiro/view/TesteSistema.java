@@ -1,7 +1,7 @@
 package view;
 
 import model.Transacao;
-import model.TipoTransacao;
+import com.financeiro.enums.TipoTransacao;
 import service.SistemaFinanceiro;
 import java.time.LocalDate;
 
