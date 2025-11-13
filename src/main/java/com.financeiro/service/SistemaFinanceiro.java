@@ -4,14 +4,13 @@ import com.financeiro.model.Usuario;
 import com.financeiro.model.Transacao;
 import com.financeiro.enums.TipoTransacao;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 /*Classe principal que gerencia todas as transações financeiras.
 Responsável por adicionar, listar, editar, remover transações e gerar relatórios.*/
+
 public class SistemaFinanceiro {
 
     private ArrayList<Transacao> transacoes; //Lista que armazena todas as transações
@@ -34,6 +33,7 @@ public class SistemaFinanceiro {
     // Setters
     public void setUsuarioLogado(Usuario usuario) { this.usuarioLogado = usuario;}
 
+    //METODOS
     //metodo para adicionar nova transação
     public void adicionarTransacao(double valor, String categoria, LocalDate data, String descricao, TipoTransacao tipo) {
 
@@ -90,7 +90,202 @@ public class SistemaFinanceiro {
     }
 
     //TO DO
-    //Metodo para filtrar transações por mês
+    //Metodo para filtrar transações num gap de meses
 
+    //Metodo para filtrar por categoria
+    public void filtrarPorCategoria(String categoria) {
+        ArrayList<Transacao> transacoesFiltradas = new ArrayList<>();
+
+        for(Transacao t: transacoes) {
+            if(t.getCategoria().equalsIgnoreCase(categoria)) {
+                transacoesFiltradas.add(t);
+            }
+
+        }
+
+        if (transacoesFiltradas.isEmpty()) {
+            System.out.println("\n*Nenhuma transação encontrada para esta categoria!*");
+            return;
+        }
+
+        System.out.println("\n*** TRANSAÇÕES: " + categoria.toUpperCase() + " ***");
+        for (Transacao t: transacoesFiltradas) {
+            System.out.println(t);
+        }
+        System.out.println("***************************\n");
+    }
+
+    //Metodo para buscar uma transação por ID
+    public Transacao buscarPorId(int id) {
+        for (Transacao t : transacoes) {
+            if (t.getId() == id) {
+                return t;
+            }
+        }
+        return null; //Não encontrou
+    }
+
+    public void editarTransacao(int id, double novoValor, String novaCategoria, LocalDate novaData, String novaDescricao) {
+        Transacao transacao = buscarPorId(id);
+
+        if (transacao == null) {
+            System.out.println("\n*Transação não encontrada!*");
+            return;
+        }
+
+        //Atualiza dados da transicao
+        transacao.setValor(novoValor);
+        transacao.setCategoria(novaCategoria);
+        transacao.setData(novaData);
+        transacao.setDescricao(novaDescricao);
+
+        System.out.println("\n*Transação editada com sucesso!*");
+    }
+
+    //metodo para remover uma transação
+    public void removerTransacao(int id) {
+        Transacao transacao = buscarPorId(id);
+
+        if (transacao == null) {
+            System.out.println("\n*Transação não encontrada!*");
+            return;
+        }
+
+        transacoes.remove(transacao);
+        System.out.println("\n*Transação removida com sucesso!*");
+
+    }
+
+    //Metodo para calcular saldo atual (receitas - despesas)
+    public double calcularSaldo() {
+        double totalReceitas = 0;
+        double totalDespesas = 0;
+
+        for (Transacao t: transacoes){
+            if (t.getTipo() == TipoTransacao.RECEITA){
+                totalReceitas+= t.getValor();
+            }else {
+                totalDespesas+= t.getValor();
+            }
+
+        }
+
+        return totalDespesas - totalReceitas;
+    }
+
+    //Metodo para calcular total de receitas
+    public double calcularTotalReceitas() {
+        double total = 0;
+
+        for (Transacao t: transacoes) {
+            if (t.getTipo() == TipoTransacao.RECEITA) {
+                total+=t.getValor();
+            }
+        }
+        return total;
+    }
+
+    //Metodo para calcular total de despesas
+    public double calcularTotalDespesas() {
+        double total = 0;
+
+        for (Transacao t: transacoes) {
+            if (t.getTipo() == TipoTransacao.DESPESA) {
+                total+=t.getValor();
+            }
+        }
+        return total;
+    }
+
+    //Metodo para calcular despesas em um mês específico
+    public double calcularDespesasMes(int mes, int ano) {
+        double total = 0;
+        for (Transacao t: transacoes) {
+            if (t.getTipo() == TipoTransacao.DESPESA &&
+                    t.getData().getMonthValue() == mes &&
+            t.getData().getYear() == ano) {
+                total+= t.getValor();
+            }
+        }
+        return total;
+    }
+
+    //Metodo para gerar relatorio mensal
+    public void gerarRelatorioMensal(int mes, int ano) {
+        double totalReceitas = 0;
+        double totalDespesas = 0;
+
+        //Mapa para armazenar gastos por categoria
+        Map<String, Double> gastosPorCategoria = new HashMap<>();
+
+        for(Transacao t: transacoes) {
+            if (t.getData().getMonthValue() == mes && t.getData().getYear() == ano) {
+                if (t.getTipo() == TipoTransacao.RECEITA) {
+                    totalReceitas +=t.getValor();
+                }else {
+                    totalDespesas += t.getValor();
+
+                    //Acumu;a gastos por categoria
+                    String categoria = t.getCategoria();
+                    gastosPorCategoria.put(categoria, gastosPorCategoria.getOrDefault(categoria, 0.0) + t.getValor());
+                }
+            }
+        }
+
+        double saldoFinal = totalReceitas - totalDespesas;
+
+        System.out.println("\n*** RELATÓRIO MENSAL " + mes + "/" + ano + " ***");
+        System.out.println("Total de Receitas: R$ " + String.format("%.2f" , totalReceitas));
+        System.out.println("Total de Despesas: R$ " + String.format("%.2f" , totalDespesas));
+        System.out.println("Saldo Final: R$ " + String.format("%.2f" + saldoFinal));
+
+        if (!gastosPorCategoria.isEmpty()) {
+            System.out.println("\n*** Despesas por Categoria ***");
+            for (Map.Entry<String, Double> entry : gastosPorCategoria.entrySet()) {
+                double percentual = (entry.getValue() / totalDespesas) * 100;
+                System.out.println(entry.getKey() + ": R$ " + String.format("%.2f", entry.getValue()) +
+                        " (" + String.format("%.1f", percentual) + "%)");
+            }
+        }
+        System.out.println("***************************\n");
+    }
+
+    //Metodo para verificar alerta de orçamento
+    public void verificarAlertaOrcamento() {
+        LocalDate hoje = LocalDate.now();
+        double despesasMesAtual = calcularDespesasMes(hoje.getMonthValue(), hoje.getYear());
+        double orcamento = usuarioLogado.getOrcamentoMensal();
+
+        //verifica se já gastou mais de % ou mais do orçamento passado
+        double percentualGasto = (despesasMesAtual / orcamento) * 100;
+
+        if (percentualGasto >= 80 && percentualGasto < 100) {
+            System.out.println("\n*** ALERTA: Você já gastou " + String.format("%.1f", percentualGasto) + "% do seu orçamento mensal! ***");
+            System.out.println(" Orçamento: R$ " + String.format("%.2f", orcamento));
+            System.out.println(" Gasto: R$ " + String.format("%.2f", despesasMesAtual));
+            System.out.println(" Disponível: R$ " + String.format("%.2f", orcamento - despesasMesAtual));
+
+        } else if(percentualGasto >=100){
+            System.out.println("\n*** ALERTA: Você ultrapassou seu orçamento mensal! ***");
+            System.out.println(" Orçamento: R$ " + String.format("%.2f", orcamento));
+            System.out.println(" Gasto: R$ " + String.format("%.2f", despesasMesAtual));
+            System.out.println(" Disponível: R$ " + String.format("%.2f", despesasMesAtual - orcamento));
+
+        }
+    }
+
+
+    //Metodo para exibir Saldo atual
+    public void exibirSaldo() {
+        double saldo = calcularSaldo();
+        double receitas = calcularTotalReceitas();
+        double despesas = calcularTotalDespesas();
+
+        System.out.println("*** SALDO ATUAL ***");
+        System.out.println("Total de Receitas: R$ " + String.format("%.2f" + receitas));
+        System.out.println("Total de Despesas: R$ " + String.format("%.2f" + despesas));
+        System.out.println("Saldo: R$ " + String.format("%.2f", saldo));
+        System.out.println("***************************\n");
+    }
 
 }

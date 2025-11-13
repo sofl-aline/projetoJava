@@ -10,15 +10,13 @@ public class Usuario {
 
     //Atributos da Classe
     private String nome;
-    private String email;
     private String senha;
     private double orcamentoMensal;
     private List<Transacao> transacoes = new ArrayList<>();
 
     //Construtor da Classe
-    public Usuario(String nome, String email, String senha) {
+    public Usuario(String nome, String senha) {
         this.nome = nome;
-        this.email = email;
         this.senha = senha;
         this.orcamentoMensal = 0.0; // Por padrão, não possui orçamento definido
     }
@@ -29,22 +27,6 @@ public class Usuario {
         transacoes.add(t);
     }
 
-    //TO DO
-    public double calcularSaldo() {
-        double saldo = 0;
-        for (Transacao t : transacoes) {
-            if (t.getTipo() == TipoTransacao.RECEITA) {
-                saldo += t.getValor();
-            } else {
-                saldo -= t.getValor();
-            }
-        }
-        return saldo;
-    }
-
-    public List<Transacao> getTransacoes() {
-        return transacoes;
-    }
 
     // Getters
     public String getNome() { return nome; }
@@ -52,8 +34,6 @@ public class Usuario {
     public String getSenha() { return senha;}
 
     public double getOrcamentoMensal() { return orcamentoMensal;}
-
-    public String getEmail() { return email; }
 
 
     // Setters
@@ -63,7 +43,6 @@ public class Usuario {
 
     public void setOrcamentoMensal(double orcamentoMensal) {this.orcamentoMensal = orcamentoMensal;}
 
-    public void setEmail(String email) { this.email = email; }
 
     //TO DO
     //metodo para verificar se senha esta correta

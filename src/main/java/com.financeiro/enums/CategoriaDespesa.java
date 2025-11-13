@@ -8,7 +8,7 @@ public enum CategoriaDespesa {
     MORADIA ("Moradia (Aluguel, Condomínio, Água, Energia elétrica, etc)"),
     ALIMENTACAO ("Alimentação (Restaurante, Supermercado, Feira)"),
     TRANSPORTE ("Transporte (Veículo, Seguro Carro, Vale-Transporte, Combustível, Estacionamento, Manutenção)"),
-    SAÚDE ("Saúde (Plano de saúde, Academia, Consulta médica, Exames, Medicamentos, Terapia, Tratamemnto)"),
+    SAUDE ("Saúde (Plano de saúde, Academia, Consulta médica, Exames, Medicamentos, Terapia, Tratamemnto)"),
     EDUCACAO ("Educação (Escola, Cursos, Material didático, Livros, Palestras e Workshops)"),
     LAZER ("Lazer e Cultura (Assinaturas, Cinema, Shows, Viagens e passeios, Festas e eventos)"),
     VESTIUARIO("Vestuário e Cuidados Pessoais (Roupas, Calçados, Estética, Higiene pessoal, cosméticos)"),
