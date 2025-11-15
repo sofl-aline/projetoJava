@@ -10,7 +10,7 @@ public enum CategoriaReceita {
     SERVICOS ("Serviços (Prestação de serviço, Freelance)"),
     OUTROS ("Outros/Diversos");
 
-    private String descricao;
+    private final String descricao;
 
     //Construtor do enum:
     CategoriaReceita(String descricao) { this.descricao = descricao;}

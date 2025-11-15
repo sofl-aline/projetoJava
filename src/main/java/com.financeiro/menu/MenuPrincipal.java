@@ -15,9 +15,9 @@ Classe responsável por exibir os menus e gerenciar a interação com o usuário
 public class MenuPrincipal {
 
     //Scanner para ler dados do teclado
-    private Scanner scanner;
+    private final Scanner scanner;
     //Sistema Financeiro que gerencia as transações
-    private SistemaFinanceiro sistema;
+    private final SistemaFinanceiro sistema;
     //Usuário fictício para simplificar( em um sistema real, existiria cadastro de vários usuários)
     private Usuario usuario;
 
@@ -43,7 +43,7 @@ public class MenuPrincipal {
             System.out.println("*** MENU INICIAL ***");
             System.out.println("1. Login");
             System.out.println("2.Sair");
-            System.out.println("Escolja uma opção: ");
+            System.out.println("Escolha uma opção: ");
 
             int opcao = lerOpcao();
 
@@ -235,11 +235,61 @@ public class MenuPrincipal {
     //Metodo para filtrar por categoria (opção 5 do Menu Principal)
     private void filtrarPorCategoria() {
         System.out.println("\n*** FILTRAR POR CATEGORIA ***");
-        System.out.print("Digite o nome da categoria: ");
-        String categoria = scanner.nextLine();
 
-        sistema.filtrarPorCategoria(categoria);
+        // Primeiro escolhe se é categoria de receita ou de despesa
+        System.out.println("Escolha o tipo de categoria:");
+        System.out.println("1. Categorias de Receita");
+        System.out.println("2. Categorias de Despesa");
+        System.out.print("Opção: ");
+        int tipoOpcao = lerOpcao();
+
+        String categoriaSelecionada;
+
+        if (tipoOpcao == 1) {
+            // Listar categorias de RECEITA
+            CategoriaReceita[] categorias = CategoriaReceita.values();
+            System.out.println("\nCategorias de Receita:");
+            for (int i = 0; i < categorias.length; i++) {
+                System.out.println((i + 1) + ". " + categorias[i].getDescricao());
+            }
+
+            System.out.print("Escolha a categoria (1-" + categorias.length + "): ");
+            int opcaoCategoria = lerOpcao();
+
+            if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
+                System.out.println("\n*Categoria inválida!*");
+                return;
+            }
+
+            categoriaSelecionada = categorias[opcaoCategoria - 1].getDescricao();
+
+        } else if (tipoOpcao == 2) {
+            // Listar categorias de DESPESA
+            CategoriaDespesa[] categorias = CategoriaDespesa.values();
+            System.out.println("\nCategorias de Despesa:");
+            for (int i = 0; i < categorias.length; i++) {
+                System.out.println((i + 1) + ". " + categorias[i].getDescricao());
+            }
+
+            System.out.print("Escolha a categoria (1-" + categorias.length + "): ");
+            int opcaoCategoria = lerOpcao();
+
+            if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
+                System.out.println("\n*Categoria inválida!*");
+                return;
+            }
+
+            categoriaSelecionada = categorias[opcaoCategoria - 1].getDescricao();
+
+        } else {
+            System.out.println("\n*Opção inválida!*");
+            return;
+        }
+
+        // Agora chama o serviço usando exatamente a descrição da categoria
+        sistema.filtrarPorCategoria(categoriaSelecionada);
     }
+
 
 
     //Metodo para editar uma transação (opção 6 do Menu Principal)
@@ -259,17 +309,65 @@ public class MenuPrincipal {
         System.out.print("Digite o novo valor: R$ ");
         double valor = lerValor();
 
-        System.out.print("Digite a nova categoria: ");
-        String categoria = scanner.nextLine();
+        // ======= ESCOLHA DA CATEGORIA =========
+        System.out.println("\nEscolha o tipo de categoria:");
+        System.out.println("1. Categorias de Receita");
+        System.out.println("2. Categorias de Despesa");
+        System.out.print("Opção: ");
+        int tipoOpcao = lerOpcao();
 
-        System.out.print("Digite a data (dd/mm/aaaa): ");
+        String categoriaSelecionada;
+
+        if (tipoOpcao == 1) {
+            CategoriaReceita[] categorias = CategoriaReceita.values();
+            System.out.println("\nCategorias de Receita:");
+            for (int i = 0; i < categorias.length; i++) {
+                System.out.println((i + 1) + ". " + categorias[i].getDescricao());
+            }
+
+            System.out.print("Escolha a categoria (1-" + categorias.length + "): ");
+            int opcaoCategoria = lerOpcao();
+
+            if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
+                System.out.println("\n*Categoria inválida!*");
+                return;
+            }
+
+            categoriaSelecionada = categorias[opcaoCategoria - 1].getDescricao();
+
+        } else if (tipoOpcao == 2) {
+
+            CategoriaDespesa[] categorias = CategoriaDespesa.values();
+            System.out.println("\nCategorias de Despesa:");
+            for (int i = 0; i < categorias.length; i++) {
+                System.out.println((i + 1) + ". " + categorias[i].getDescricao());
+            }
+
+            System.out.print("Escolha a categoria (1-" + categorias.length + "): ");
+            int opcaoCategoria = lerOpcao();
+
+            if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
+                System.out.println("\n*Categoria inválida!*");
+                return;
+            }
+
+            categoriaSelecionada = categorias[opcaoCategoria - 1].getDescricao();
+
+        } else {
+            System.out.println("\n*Opção inválida!*");
+            return;
+        }
+        // ======================================
+
+        System.out.print("Digite a nova data (dd/mm/aaaa) ou pressione ENTER para hoje: ");
         LocalDate data = lerData();
 
-        System.out.print("Digite a nova descrição");
+        System.out.print("Digite a nova descrição: ");
         String descricao = scanner.nextLine();
 
-        sistema.editarTransacao(id, valor, categoria, data, descricao);
+        sistema.editarTransacao(id, valor, categoriaSelecionada, data, descricao);
     }
+
 
 
     //Metodo para remover uma transação (opção 7 do Menu Principal)
@@ -281,7 +379,7 @@ public class MenuPrincipal {
         int id = lerOpcao();
 
         System.out.print("Tem certeza que deseja remover? (S/N): ");
-        String confirmacao = scanner.next();
+        String confirmacao = scanner.nextLine();
 
         if (confirmacao.equalsIgnoreCase("S")){
             sistema.removerTransacao(id);

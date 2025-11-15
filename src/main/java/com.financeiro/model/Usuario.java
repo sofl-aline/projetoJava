@@ -12,19 +12,13 @@ public class Usuario {
     private String nome;
     private String senha;
     private double orcamentoMensal;
-    private List<Transacao> transacoes = new ArrayList<>();
+    private final List<Transacao> transacoes = new ArrayList<>();
 
     //Construtor da Classe
     public Usuario(String nome, String senha) {
         this.nome = nome;
         this.senha = senha;
         this.orcamentoMensal = 0.0; // Por padrão, não possui orçamento definido
-    }
-
-    // Métodos para adicionar e consultar transações
-    //TO DO
-    public void adicionarTransacao(Transacao t) {
-        transacoes.add(t);
     }
 
 

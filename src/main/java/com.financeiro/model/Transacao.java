@@ -12,21 +12,20 @@ armazena informações como valor, categoria, data, descrição e tipo */
 
 public class Transacao {
 
-    // Atributos da classe
-    private int id;
+    private final int id;
     private String descricao;
     private double valor;
     private LocalDate data;
     private String categoria;
     private TipoTransacao tipo; // RECEITA ou DESPESA
 
-    // Construtor da classe
-    public Transacao(int id, String descricao, double valor, LocalDate data, String categoria, TipoTransacao tipo) {
+    // Construtor CORRIGIDO
+    public Transacao(int id, String categoria, double valor, LocalDate data, String descricao, TipoTransacao tipo) {
         this.id = id;
-        this.descricao = descricao;
+        this.categoria = categoria;  // agora categoria vem no 2º parâmetro
         this.valor = valor;
         this.data = data;
-        this.categoria = categoria;
+        this.descricao = descricao;  // descrição vem depois da data
         this.tipo = tipo;
     }
 

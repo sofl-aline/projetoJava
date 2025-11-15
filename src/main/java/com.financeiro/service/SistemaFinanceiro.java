@@ -13,7 +13,7 @@ Responsável por adicionar, listar, editar, remover transações e gerar relató
 
 public class SistemaFinanceiro {
 
-    private ArrayList<Transacao> transacoes; //Lista que armazena todas as transações
+    private final ArrayList<Transacao> transacoes; //Lista que armazena todas as transações
 
     private int proximoId; //Controle do próximo Id a ser usado
 
@@ -237,7 +237,7 @@ public class SistemaFinanceiro {
         System.out.println("\n*** RELATÓRIO MENSAL " + mes + "/" + ano + " ***");
         System.out.println("Total de Receitas: R$ " + String.format("%.2f" , totalReceitas));
         System.out.println("Total de Despesas: R$ " + String.format("%.2f" , totalDespesas));
-        System.out.println("Saldo Final: R$ " + String.format("%.2f" + saldoFinal));
+        System.out.println("Saldo Final: R$ " + String.format("%.2f" , saldoFinal));
 
         if (!gastosPorCategoria.isEmpty()) {
             System.out.println("\n*** Despesas por Categoria ***");
@@ -282,8 +282,8 @@ public class SistemaFinanceiro {
         double despesas = calcularTotalDespesas();
 
         System.out.println("*** SALDO ATUAL ***");
-        System.out.println("Total de Receitas: R$ " + String.format("%.2f" + receitas));
-        System.out.println("Total de Despesas: R$ " + String.format("%.2f" + despesas));
+        System.out.println("Total de Receitas: R$ " + String.format("%.2f" , receitas));
+        System.out.println("Total de Despesas: R$ " + String.format("%.2f" , despesas));
         System.out.println("Saldo: R$ " + String.format("%.2f", saldo));
         System.out.println("***************************\n");
     }
