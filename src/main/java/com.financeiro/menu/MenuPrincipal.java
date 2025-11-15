@@ -40,7 +40,7 @@ public class MenuPrincipal {
     //Menu inicial - Login e Criar Conta
     private void menuInicial() {
         while (true) {
-            System.out.println("*** MENU INICIAL ***");
+            System.out.println("********** MENU INICIAL **********");
             System.out.println("1. Login");
             System.out.println("2.Sair");
             System.out.println("Escolha uma opção: ");
@@ -54,7 +54,7 @@ public class MenuPrincipal {
                     menuPrincipal(); // só vai pro menu principal se fizer o login
                 } break;
                 case 2:
-                    System.out.println("\n*Obrigada por usar o sistema! Até logo!*");
+                    System.out.println("\n* Obrigada por usar o sistema! Até logo! *");
                     scanner.close();
                     return;
                 default:
@@ -66,7 +66,7 @@ public class MenuPrincipal {
 
     //Metodo para fazer login
     private void fazerLogin() {
-        System.out.println("\n*** LOGIN ***");
+        System.out.println("\n********** LOGIN **********");
         System.out.println("Digite seu nome: ");
         String nome = scanner.nextLine();
 
@@ -74,7 +74,7 @@ public class MenuPrincipal {
         String senha = scanner.nextLine();
 
         if (nome.isEmpty() || senha.isEmpty()) {
-            System.out.println("\n*ome e senha não podem estar vazios!*");
+            System.out.println("\n* Nome e senha não podem estar vazios! *");
             return;
         }
 
@@ -86,11 +86,11 @@ public class MenuPrincipal {
     //Menu Principal - após o login
     private void menuPrincipal() {
         while (true) {
-            System.out.println("\n*** MENU PRINCIPAL ***");
+            System.out.println("\n********** MENU PRINCIPAL **********");
             System.out.println("1. Adicionar Receita");
             System.out.println("2. Adicionar Despesa");
             System.out.println("3. Listar todas as Transações");
-            System.out.println("4. Filtrar Transações por Mês");
+            System.out.println("4. Filtrar Transações por Mês/Meses");
             System.out.println("5. Filtrar Transações por Categoria");
             System.out.println("6. Editar Transação");
             System.out.println("7. Remover Transação");
@@ -124,19 +124,19 @@ public class MenuPrincipal {
                 case 10:
                     definirOrcamento(); break;
                 case 11:
-                    System.out.println("\n*Logout realizado com sucesso! Até Breve!*");
+                    System.out.println("\n* Logout realizado com sucesso! Até Breve! *");
                     usuario = null;
                     sistema.setUsuarioLogado(null);
                     return; //Volta para o menu inicial
                 default:
-                    System.out.println("\n*Opção inválida! Tente novamente.*");
+                    System.out.println("\n* Opção inválida! Tente novamente. *");
             }
         }
     }
 
     //Metodo para adicionar uma receita (opção 1 do Menu Principal)
     private void adicionarReceita() {
-        System.out.println("\n*** ADICIONAR RECEITA ***");
+        System.out.println("\n********** ADICIONAR RECEITA **********");
 
         //Escolher categoria
         System.out.println("\nCategoria de Receita: ");
@@ -158,7 +158,7 @@ public class MenuPrincipal {
         System.out.print("Digite o valor (ex: 1500.00): R$ ");
         double valor = lerValor();
         if (valor <=0) {
-            System.out.println("\n* Valor deve ser maior que zero!*");
+            System.out.println("\n* Valor deve ser maior que zero! *");
             return;
         }
 
@@ -176,7 +176,7 @@ public class MenuPrincipal {
 
     //Metodo para adicionar uma despesa (opção 2 do Menu Principal)
     private void adicionarDespesa() {
-        System.out.println("\n*** ADICIONAR DESPESA ***");
+        System.out.println("\n********** ADICIONAR DESPESA **********");
 
         //Escolher categoria
         System.out.println("\nCategorias de Despesa: ");
@@ -198,7 +198,7 @@ public class MenuPrincipal {
         System.out.print("Digite o valor (ex: 150.00): R$ ");
         double valor = lerValor();
         if (valor <= 0) {
-            System.out.println("\n* Valor deve ser maior que zero!*");
+            System.out.println("\n* Valor deve ser maior que zero! *");
             return;
         }
 
@@ -216,25 +216,62 @@ public class MenuPrincipal {
 
     //Metodo para filtrar por mês (opção 4 do Menu Principal)
     private void filtrarPorMes() {
-        System.out.println("\n*** FILTRAR POR MÊS ***");
-        System.out.print("Digite o mês (1-12): ");
-        int mes = lerOpcao();
+        System.out.println("\n********** FILTRAR POR MÊS **********");
+        System.out.println("1. Filtrar por um único mês");
+        System.out.println("2. Filtrar por intervalo de meses");
+        System.out.print("Escolha uma opção: ");
+        int opcao = lerOpcao();
 
-        if (mes < 1 || mes >12) {
-            System.out.println("\nMês inválido!");
-            return;
+        if (opcao == 1) {
+            // --- FILTRO POR UM ÚNICO MÊS (COMPORTAMENTO ANTIGO) ---
+            System.out.print("Digite o mês (1-12): ");
+            int mes = lerOpcao();
+
+            if (mes < 1 || mes > 12) {
+                System.out.println("\nMês inválido!");
+                return;
+            }
+
+            System.out.print("Digite o ano (ex: 2025): ");
+            int ano = lerOpcao();
+
+            sistema.filtrarPorMes(mes, ano);
+
+        } else if (opcao == 2) {
+            // --- FILTRO POR INTERVALO DE MESES ---
+            System.out.print("Digite o mês inicial (1-12): ");
+            int mesInicial = lerOpcao();
+
+            System.out.print("Digite o mês final (1-12): ");
+            int mesFinal = lerOpcao();
+
+            if (mesInicial < 1 || mesInicial > 12 || mesFinal < 1 || mesFinal > 12) {
+                System.out.println("\nMês inválido!");
+                return;
+            }
+
+            // Se o usuário digitar invertido (ex: 8 até 3), a gente corrige
+            if (mesInicial > mesFinal) {
+                int temp = mesInicial;
+                mesInicial = mesFinal;
+                mesFinal = temp;
+            }
+
+            System.out.print("Digite o ano (ex: 2025): ");
+            int ano = lerOpcao();
+
+            sistema.filtrarPorMes(mesInicial, mesFinal, ano);
+
+        } else {
+            System.out.println("\nOpção inválida!");
         }
-
-        System.out.print("Digite o ano (ex: 2025): ");
-        int ano = lerOpcao();
-
-        sistema.filtrarPorMes(mes, ano);
     }
+
 
 
     //Metodo para filtrar por categoria (opção 5 do Menu Principal)
     private void filtrarPorCategoria() {
-        System.out.println("\n*** FILTRAR POR CATEGORIA ***");
+        System.out.println("\n********** FILTRAR POR CATEGORIA **********");
 
         // Primeiro escolhe se é categoria de receita ou de despesa
         System.out.println("Escolha o tipo de categoria:");
@@ -257,7 +294,7 @@ public class MenuPrincipal {
             int opcaoCategoria = lerOpcao();
 
             if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
-                System.out.println("\n*Categoria inválida!*");
+                System.out.println("\n* Categoria inválida! *");
                 return;
             }
 
@@ -275,14 +312,14 @@ public class MenuPrincipal {
             int opcaoCategoria = lerOpcao();
 
             if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
-                System.out.println("\n*Categoria inválida!*");
+                System.out.println("\n* Categoria inválida! *");
                 return;
             }
 
             categoriaSelecionada = categorias[opcaoCategoria - 1].getDescricao();
 
         } else {
-            System.out.println("\n*Opção inválida!*");
+            System.out.println("\n* Opção inválida! *");
             return;
         }
 
@@ -294,7 +331,7 @@ public class MenuPrincipal {
 
     //Metodo para editar uma transação (opção 6 do Menu Principal)
     private void editarTransacao() {
-        System.out.println("\n*** EDITAR TRANSAÇÃO ***");
+        System.out.println("\n********** EDITAR TRANSAÇÃO ***********");
         sistema.listarTodasTransacoes();
 
         System.out.print("Digite o ID da transação que deseja editar: ");
@@ -329,7 +366,7 @@ public class MenuPrincipal {
             int opcaoCategoria = lerOpcao();
 
             if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
-                System.out.println("\n*Categoria inválida!*");
+                System.out.println("\n* Categoria inválida! *");
                 return;
             }
 
@@ -347,14 +384,14 @@ public class MenuPrincipal {
             int opcaoCategoria = lerOpcao();
 
             if (opcaoCategoria < 1 || opcaoCategoria > categorias.length) {
-                System.out.println("\n*Categoria inválida!*");
+                System.out.println("\n* Categoria inválida! *");
                 return;
             }
 
             categoriaSelecionada = categorias[opcaoCategoria - 1].getDescricao();
 
         } else {
-            System.out.println("\n*Opção inválida!*");
+            System.out.println("\n* Opção inválida! *");
             return;
         }
         // ======================================
@@ -372,7 +409,7 @@ public class MenuPrincipal {
 
     //Metodo para remover uma transação (opção 7 do Menu Principal)
     private void removerTransacao() {
-        System.out.println("\n*** REMOVER TRANSAÇÃO ***");
+        System.out.println("\n********** REMOVER TRANSAÇÃO **********");
         sistema.listarTodasTransacoes();
 
         System.out.print("Digite o ID da transação que deseja remover: ");
@@ -390,7 +427,7 @@ public class MenuPrincipal {
 
     //Metodo para gerar relatório mensal (opção 9 do Menu Principal)
     private void gerarRelatorioMensal() {
-        System.out.println("\n*** GERAR RELATÓRIO MENSAL ***");
+        System.out.println("\n********** GERAR RELATÓRIO MENSAL **********");
         System.out.print("Digite o mês (1-12): ");
         int mes = lerOpcao();
 
@@ -408,7 +445,7 @@ public class MenuPrincipal {
 
     //Metodo para definir orçamento mensal (opção 10 do Menu Principal)
     private void definirOrcamento() {
-        System.out.println("\n*** definir orçamento mensal ***");
+        System.out.println("\n********** definir orçamento mensal **********");
         System.out.print("Digite o valor do orçamento mensal: R$ ");
         double orcamento = lerValor();
 

@@ -210,6 +210,40 @@ public class SistemaFinanceiro {
         return total;
     }
 
+    //Sobrecarga do metodo filtrarPorMes
+    public void filtrarPorMes(int mesInicial, int mesFinal, int ano) {
+        if (mesInicial > mesFinal) {
+            int temp = mesInicial;
+            mesInicial = mesFinal;
+            mesFinal = temp;
+        }
+
+        ArrayList<Transacao> transacoesFiltradas = new ArrayList<>();
+
+        for (Transacao t : transacoes) {
+            LocalDate data = t.getData();
+            if (data.getYear() == ano) {
+                int mes = data.getMonthValue();
+                if (mes >= mesInicial && mes <= mesFinal) {
+                    transacoesFiltradas.add(t);
+                }
+            }
+        }
+
+        if (transacoesFiltradas.isEmpty()) {
+            System.out.println("\n*Nenhuma transação encontrada para este período!*");
+            return;
+        }
+
+        System.out.println("\n*** TRANSAÇÕES DE "
+                + mesInicial + " A " + mesFinal + "/" + ano + " ***");
+        for (Transacao t : transacoesFiltradas) {
+            System.out.println(t);
+        }
+        System.out.println("***************************\n");
+    }
+
+
     //Metodo para gerar relatorio mensal
     public void gerarRelatorioMensal(int mes, int ano) {
         double totalReceitas = 0;
