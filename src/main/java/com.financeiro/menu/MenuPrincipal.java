@@ -163,7 +163,7 @@ public class MenuPrincipal {
         }
 
         //Ler data
-        System.out.print("Digite a data (dd/MM/yyyy) ou pressiona ENTER para hoje: ");
+        System.out.print("Digite a data (dd/mm/aaaa) ou pressiona ENTER para hoje: ");
         LocalDate data = lerData();
 
         //Ler descrição
@@ -203,7 +203,7 @@ public class MenuPrincipal {
         }
 
         //Ler data
-        System.out.print("Digite a data (dd/MM/yyyy) ou pressiona ENTER para hoje: ");
+        System.out.print("Digite a data (dd/mm/aaaa) ou pressiona ENTER para hoje: ");
         LocalDate data = lerData();
 
         //Ler descrição

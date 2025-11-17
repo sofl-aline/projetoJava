@@ -170,7 +170,7 @@ public class SistemaFinanceiro {
 
         }
 
-        return totalDespesas - totalReceitas;
+        return totalReceitas - totalDespesas;
     }
 
     //Metodo para calcular total de receitas
