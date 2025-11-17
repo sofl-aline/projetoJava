@@ -37,7 +37,7 @@ public class MenuPrincipal {
         menuInicial();
     }
 
-    //Menu inicial - Login e Criar Conta
+    //Menu inicial - Login e saída
     private void menuInicial() {
         while (true) {
             System.out.println("********** MENU INICIAL **********");
@@ -47,6 +47,7 @@ public class MenuPrincipal {
 
             int opcao = lerOpcao();
 
+            //menu de opcoes antes de fazer login
             switch (opcao) {
                 case 1:
                     fazerLogin();
