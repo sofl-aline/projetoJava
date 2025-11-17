@@ -394,7 +394,6 @@ public class MenuPrincipal {
             System.out.println("\n* Opção inválida! *");
             return;
         }
-        // ======================================
 
         System.out.print("Digite a nova data (dd/mm/aaaa) ou pressione ENTER para hoje: ");
         LocalDate data = lerData();
