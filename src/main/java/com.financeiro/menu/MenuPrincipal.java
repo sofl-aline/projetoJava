@@ -96,7 +96,7 @@ public class MenuPrincipal {
             System.out.println("6. Editar Transação");
             System.out.println("7. Remover Transação");
             System.out.println("8. Ver Saldo Atual");
-            System.out.println("9. Gerar Relatório Mensal");
+            System.out.println("9. Gerar Relatório Anual");
             System.out.println("10. Definir orçamento Mensal");
             System.out.println("11. Logout");
             System.out.println("Escolha uma opção: ");
@@ -121,7 +121,7 @@ public class MenuPrincipal {
                 case 8:
                     sistema.exibirSaldo(); break;
                 case 9:
-                    gerarRelatorioMensal(); break;
+                    gerarRelatorioAnual(); break;
                 case 10:
                     definirOrcamento(); break;
                 case 11:
@@ -224,7 +224,7 @@ public class MenuPrincipal {
         int opcao = lerOpcao();
 
         if (opcao == 1) {
-            // --- FILTRO POR UM ÚNICO MÊS (COMPORTAMENTO ANTIGO) ---
+            //Filtro para um único mês
             System.out.print("Digite o mês (1-12): ");
             int mes = lerOpcao();
 
@@ -239,7 +239,7 @@ public class MenuPrincipal {
             sistema.filtrarPorMes(mes, ano);
 
         } else if (opcao == 2) {
-            // --- FILTRO POR INTERVALO DE MESES ---
+            //Filtro por intervalo de meses
             System.out.print("Digite o mês inicial (1-12): ");
             int mesInicial = lerOpcao();
 
@@ -251,7 +251,7 @@ public class MenuPrincipal {
                 return;
             }
 
-            // Se o usuário digitar invertido (ex: 8 até 3), a gente corrige
+            // Se o usuário digitar invertido (ex: 8 até 3), o código já corrige
             if (mesInicial > mesFinal) {
                 int temp = mesInicial;
                 mesInicial = mesFinal;
@@ -324,7 +324,7 @@ public class MenuPrincipal {
             return;
         }
 
-        // Agora chama o serviço usando exatamente a descrição da categoria
+        // Chama o serviço usando exatamente a descrição da categoria
         sistema.filtrarPorCategoria(categoriaSelecionada);
     }
 
@@ -347,7 +347,7 @@ public class MenuPrincipal {
         System.out.print("Digite o novo valor: R$ ");
         double valor = lerValor();
 
-        // ======= ESCOLHA DA CATEGORIA =========
+        //Escolha da Categoria
         System.out.println("\nEscolha o tipo de categoria:");
         System.out.println("1. Categorias de Receita");
         System.out.println("2. Categorias de Despesa");
@@ -426,20 +426,12 @@ public class MenuPrincipal {
     }
 
     //Metodo para gerar relatório mensal (opção 9 do Menu Principal)
-    private void gerarRelatorioMensal() {
-        System.out.println("\n********** GERAR RELATÓRIO MENSAL **********");
-        System.out.print("Digite o mês (1-12): ");
-        int mes = lerOpcao();
-
-        if(mes < 1 || mes > 12) {
-            System.out.println("\nMês inválido!");
-            return;
-        }
-
+    private void gerarRelatorioAnual() {
+        System.out.println("\n*** GERAR RELATÓRIO ANUAL ***");
         System.out.print("Digite o ano (ex: 2025): ");
-        int ano = lerOpcao();
+        int ano = lerOpcao();   // usa o mesmo metodo que você já tem para ler inteiros
 
-        sistema.gerarRelatorioMensal(mes, ano);
+        sistema.gerarRelatorioAnual(ano);
     }
 
 

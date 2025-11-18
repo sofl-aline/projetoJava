@@ -244,44 +244,74 @@ public class SistemaFinanceiro {
 
 
     //Metodo para gerar relatorio mensal
-    public void gerarRelatorioMensal(int mes, int ano) {
-        double totalReceitas = 0;
-        double totalDespesas = 0;
+    public void gerarRelatorioAnual(int ano) {
+        double totalReceitas = 0.0;
+        double totalDespesas = 0.0;
 
-        //Mapa para armazenar gastos por categoria
-        Map<String, Double> gastosPorCategoria = new HashMap<>();
+        // Mapas para armazenar valores por categoria
+        Map<String, Double> receitasPorCategoria = new HashMap<>();
+        Map<String, Double> despesasPorCategoria = new HashMap<>();
 
-        for(Transacao t: transacoes) {
-            if (t.getData().getMonthValue() == mes && t.getData().getYear() == ano) {
+        // Percorre todas as transações
+        for (Transacao t : transacoes) {
+            // Filtra apenas as transações do ano informado
+            if (t.getData().getYear() == ano) {
+
                 if (t.getTipo() == TipoTransacao.RECEITA) {
-                    totalReceitas +=t.getValor();
-                }else {
+                    totalReceitas += t.getValor();
+
+                    String categoria = t.getCategoria();
+                    receitasPorCategoria.put(
+                            categoria,
+                            receitasPorCategoria.getOrDefault(categoria, 0.0) + t.getValor()
+                    );
+
+                } else if (t.getTipo() == TipoTransacao.DESPESA) {
                     totalDespesas += t.getValor();
 
-                    //Acumula gastos por categoria
                     String categoria = t.getCategoria();
-                    gastosPorCategoria.put(categoria, gastosPorCategoria.getOrDefault(categoria, 0.0) + t.getValor());
+                    despesasPorCategoria.put(
+                            categoria,
+                            despesasPorCategoria.getOrDefault(categoria, 0.0) + t.getValor()
+                    );
                 }
             }
         }
 
         double saldoFinal = totalReceitas - totalDespesas;
 
-        System.out.println("\n*** RELATÓRIO MENSAL " + mes + "/" + ano + " ***");
-        System.out.println("Total de Receitas: R$ " + String.format("%.2f" , totalReceitas));
-        System.out.println("Total de Despesas: R$ " + String.format("%.2f" , totalDespesas));
-        System.out.println("Saldo Final: R$ " + String.format("%.2f" , saldoFinal));
+        System.out.println("\n*** RELATÓRIO ANUAL " + ano + " ***");
+        System.out.println("Total de Receitas: R$ " + String.format("%.2f", totalReceitas));
+        System.out.println("Total de Despesas: R$ " + String.format("%.2f", totalDespesas));
+        System.out.println("Saldo Final: R$ " + String.format("%.2f", saldoFinal));
 
-        if (!gastosPorCategoria.isEmpty()) {
-            System.out.println("\n*** Despesas por Categoria ***");
-            for (Map.Entry<String, Double> entry : gastosPorCategoria.entrySet()) {
-                double percentual = (entry.getValue() / totalDespesas) * 100;
-                System.out.println(entry.getKey() + ": R$ " + String.format("%.2f", entry.getValue()) +
-                        " (" + String.format("%.1f", percentual) + "%)");
+        // RECEITAS por categoria
+        if (!receitasPorCategoria.isEmpty() && totalReceitas > 0) {
+            System.out.println("\n*** Receitas por Categoria ***");
+            for (Map.Entry<String, Double> entry : receitasPorCategoria.entrySet()) {
+                double percentual = (entry.getValue() / totalReceitas) * 100.0;
+                System.out.println(
+                        entry.getKey() + ": R$ " + String.format("%.2f", entry.getValue()) +
+                                " (" + String.format("%.1f", percentual) + "%)"
+                );
             }
         }
+
+        // DESPESAS por categoria
+        if (!despesasPorCategoria.isEmpty() && totalDespesas > 0) {
+            System.out.println("\n*** Despesas por Categoria ***");
+            for (Map.Entry<String, Double> entry : despesasPorCategoria.entrySet()) {
+                double percentual = (entry.getValue() / totalDespesas) * 100.0;
+                System.out.println(
+                        entry.getKey() + ": R$ " + String.format("%.2f", entry.getValue()) +
+                                " (" + String.format("%.1f", percentual) + "%)"
+                );
+            }
+        }
+
         System.out.println("***************************\n");
     }
+
 
     //Metodo para verificar alerta de orçamento
     public void verificarAlertaOrcamento() {
@@ -302,9 +332,13 @@ public class SistemaFinanceiro {
             System.out.println("\n*** ALERTA: Você ultrapassou seu orçamento mensal! ***");
             System.out.println(" Orçamento: R$ " + String.format("%.2f", orcamento));
             System.out.println(" Gasto: R$ " + String.format("%.2f", despesasMesAtual));
-            System.out.println(" Disponível: R$ " + String.format("%.2f", despesasMesAtual - orcamento));
 
+            double excedente = despesasMesAtual - orcamento;
+
+            System.out.println(" Disponível: R$ 0,00");
+            System.out.println(" Você excedeu o orçamento em: R$ " + String.format("%.2f", excedente));
         }
+
     }
 
 
@@ -314,7 +348,7 @@ public class SistemaFinanceiro {
         double receitas = calcularTotalReceitas();
         double despesas = calcularTotalDespesas();
 
-        System.out.println("*** SALDO ATUAL ***");
+        System.out.println("********** SALDO ATUAL **********");
         System.out.println("Total de Receitas: R$ " + String.format("%.2f" , receitas));
         System.out.println("Total de Despesas: R$ " + String.format("%.2f" , despesas));
         System.out.println("Saldo: R$ " + String.format("%.2f", saldo));

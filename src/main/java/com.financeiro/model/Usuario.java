@@ -12,7 +12,6 @@ public class Usuario {
     private String nome;
     private String senha;
     private double orcamentoMensal;
-    private final List<Transacao> transacoes = new ArrayList<>();
 
     //Construtor da Classe
     public Usuario(String nome, String senha) {
@@ -38,7 +37,4 @@ public class Usuario {
     public void setOrcamentoMensal(double orcamentoMensal) {this.orcamentoMensal = orcamentoMensal;}
 
 
-    //TO DO
-    //metodo para verificar se senha esta correta
-    public boolean validarSenha(String senhaDigitada) { return this.senha.equals(senhaDigitada);}
 }
