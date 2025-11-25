@@ -29,6 +29,14 @@ public class SistemaFinanceiro {
     // Getters
     public Usuario getUsuarioLogado() { return usuarioLogado;}
 
+    public ArrayList<Transacao> getTransacoes() {
+        return transacoes;
+    }
+
+    public int getProximoId() {
+        return proximoId;
+    }
+
 
     // Setters
     public void setUsuarioLogado(Usuario usuario) { this.usuarioLogado = usuario;}
@@ -321,5 +329,26 @@ public class SistemaFinanceiro {
         System.out.println("Saldo: R$ " + String.format("%.2f", saldo));
         System.out.println("***************************\n");
     }
+
+
+    public void carregarEstado(Usuario usuario,
+                               ArrayList<Transacao> transacoesCarregadas,
+                               int proximoId) {
+
+        // Limpa a lista atual
+        this.transacoes.clear();
+
+        // Adiciona as transações que vieram do arquivo (se tiver)
+        if (transacoesCarregadas != null) {
+            this.transacoes.addAll(transacoesCarregadas);
+        }
+
+        // Define o usuário logado (se tiver)
+        this.usuarioLogado = usuario;
+
+        // Define o próximo id (garantindo que seja pelo menos 1)
+        this.proximoId = (proximoId <= 0) ? 1 : proximoId;
+    }
+
 
 }

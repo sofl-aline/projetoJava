@@ -2,6 +2,7 @@ package com.financeiro.menu;
 
 import com.financeiro.model.Usuario;
 import com.financeiro.enums.*;
+import com.financeiro.persistencia.JsonRepositorio;
 import com.financeiro.service.SistemaFinanceiro;
 import javax.swing.*;
 import java.time.DateTimeException;
@@ -26,6 +27,15 @@ public class MenuPrincipal {
         this.scanner = new Scanner(System.in);
         this.sistema = new SistemaFinanceiro();
         this.usuario = null;
+
+        // 🔹 Tenta carregar os dados do JSON se o arquivo existir
+        JsonRepositorio.carregar(this.sistema);
+
+        // 🔹 Se o JSON já tiver um usuário gravado, sincroniza
+        if (this.sistema.getUsuarioLogado() != null) {
+            this.usuario = this.sistema.getUsuarioLogado();
+        }
+
     }
 
     //Metodo principal que inicia o Sistema
@@ -49,10 +59,11 @@ public class MenuPrincipal {
 
             switch (opcao) {
                 case 1:
-                    fazerLogin();
-                if (usuario != null) {
-                    menuPrincipal(); // só vai pro menu principal se fizer o login
-                } break;
+                    boolean logado = fazerLogin();
+                    if (logado) {
+                        menuPrincipal(); // Só entra se a senha estiver correta
+                    }
+                    break;
                 case 2:
                     System.out.println("\n* Obrigada por usar o sistema! Até logo! *");
                     scanner.close();
@@ -65,23 +76,48 @@ public class MenuPrincipal {
     }
 
     //Metodo para fazer login
-    private void fazerLogin() {
+    private boolean fazerLogin() {
         System.out.println("\n********** LOGIN **********");
-        System.out.println("Digite seu nome: ");
+
+        System.out.print("Digite seu nome: ");
         String nome = scanner.nextLine();
 
-        System.out.println("Digite sua senha: ");
-        String senha = scanner.nextLine();
+        System.out.print("Digite sua senha: ");
+        String senhaDigitada = scanner.nextLine();
 
-        if (nome.isEmpty() || senha.isEmpty()) {
+        if (nome.isEmpty() || senhaDigitada.isEmpty()) {
             System.out.println("\n* Nome e senha não podem estar vazios! *");
-            return;
+            return false;
         }
 
-        usuario = new Usuario(nome, senha);
+        // 1) Se NÃO existe usuário salvo → cria o primeiro
+        if (usuario == null) {
+            usuario = new Usuario(nome, senhaDigitada);
+            sistema.setUsuarioLogado(usuario);
+
+            System.out.println("\n* Primeiro acesso! Usuário criado com sucesso! *");
+            return true;
+        }
+
+        // 2) Nome não corresponde ao usuário salvo
+        if (!usuario.getNome().equals(nome)) {
+            System.out.println("\n* Usuário ou senha inválidos! *");
+            return false;
+        }
+
+        // 3) Aqui usamos seu metodo validarSenha corretamente
+        if (!usuario.validarSenha(senhaDigitada)) {
+            System.out.println("\n* Usuário ou senha inválidos! *");
+            return false;
+        }
+
+        // 4) Senha correta → login realizado
         sistema.setUsuarioLogado(usuario);
-        System.out.println("\n* Login realizado com sucesso! Bem-vindo(a), " + nome + "!*");
+        System.out.println("\n* Login realizado com sucesso! Bem-vindo(a), " + nome + "! *");
+        return true;
     }
+
+
 
     //Menu Principal - após o login
     private void menuPrincipal() {
@@ -125,8 +161,8 @@ public class MenuPrincipal {
                     definirOrcamento(); break;
                 case 11:
                     System.out.println("\n* Logout realizado com sucesso! Até Breve! *");
-                    usuario = null;
                     sistema.setUsuarioLogado(null);
+                    JsonRepositorio.salvar(sistema);
                     return; //Volta para o menu inicial
                 default:
                     System.out.println("\n* Opção inválida! Tente novamente. *");
@@ -172,6 +208,9 @@ public class MenuPrincipal {
 
         //Adiciona a transação
         sistema.adicionarTransacao(valor, categoria, data, descricao, TipoTransacao.RECEITA);
+
+        JsonRepositorio.salvar(sistema);
+
     }
 
     //Metodo para adicionar uma despesa (opção 2 do Menu Principal)
@@ -212,6 +251,9 @@ public class MenuPrincipal {
 
         //Adiciona a transação
         sistema.adicionarTransacao(valor, categoria, data, descricao, TipoTransacao.DESPESA);
+
+        JsonRepositorio.salvar(sistema);
+
     }
 
     //Metodo para filtrar por mês (opção 4 do Menu Principal)
@@ -394,7 +436,7 @@ public class MenuPrincipal {
             System.out.println("\n* Opção inválida! *");
             return;
         }
-        // ======================================
+
 
         System.out.print("Digite a nova data (dd/mm/aaaa) ou pressione ENTER para hoje: ");
         LocalDate data = lerData();
@@ -403,6 +445,9 @@ public class MenuPrincipal {
         String descricao = scanner.nextLine();
 
         sistema.editarTransacao(id, valor, categoriaSelecionada, data, descricao);
+
+        JsonRepositorio.salvar(sistema);
+
     }
 
 
@@ -423,6 +468,9 @@ public class MenuPrincipal {
         } else {
             System.out.println("\nOperação cancelada!");
         }
+
+        JsonRepositorio.salvar(sistema);
+
     }
 
     //Metodo para gerar relatório mensal (opção 9 do Menu Principal)
@@ -457,6 +505,9 @@ public class MenuPrincipal {
         usuario.setOrcamentoMensal(orcamento);
         System.out.println("\n* Orçamento mensal definido com sucesso! *");
         System.out.println("Você receberá alertas quando gastar 80% ou mais deste valor.");
+
+        JsonRepositorio.salvar(sistema);
+
     }
 
 
