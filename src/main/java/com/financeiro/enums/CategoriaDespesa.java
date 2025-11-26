@@ -25,3 +25,4 @@ public enum CategoriaDespesa {
     public String getDescricao() { return descricao;}
 
 }
+

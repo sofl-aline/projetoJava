@@ -4,10 +4,10 @@ import com.financeiro.model.Usuario;
 import com.financeiro.enums.*;
 import com.financeiro.persistencia.JsonRepositorio;
 import com.financeiro.service.SistemaFinanceiro;
-import javax.swing.*;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /*
@@ -27,15 +27,6 @@ public class MenuPrincipal {
         this.scanner = new Scanner(System.in);
         this.sistema = new SistemaFinanceiro();
         this.usuario = null;
-
-        // 🔹 Tenta carregar os dados do JSON se o arquivo existir
-        JsonRepositorio.carregar(this.sistema);
-
-        // 🔹 Se o JSON já tiver um usuário gravado, sincroniza
-        if (this.sistema.getUsuarioLogado() != null) {
-            this.usuario = this.sistema.getUsuarioLogado();
-        }
-
     }
 
     //Metodo principal que inicia o Sistema
@@ -90,32 +81,36 @@ public class MenuPrincipal {
             return false;
         }
 
-        // 1) Se NÃO existe usuário salvo → cria o primeiro
-        if (usuario == null) {
-            usuario = new Usuario(nome, senhaDigitada);
-            sistema.setUsuarioLogado(usuario);
+        // 1) Tenta carregar os dados desse usuário a partir do JSON
+        Usuario usuarioCarregado = JsonRepositorio.carregarParaUsuario(sistema, nome);
 
-            System.out.println("\n* Primeiro acesso! Usuário criado com sucesso! *");
+        // 2) Se NÃO existe arquivo: primeiro acesso desse nome → cria usuário novo
+        if (usuarioCarregado == null) {
+            usuario = new Usuario(nome, senhaDigitada);
+            // Limpa o estado anterior e inicializa com usuário novo e lista vazia
+            sistema.carregarEstado(usuario, new ArrayList<>(), 1);
+
+            System.out.println("\n* Primeiro acesso! Conta criada com sucesso. *");
+            // opcional: já salva imediatamente
+            JsonRepositorio.salvar(sistema);
             return true;
         }
 
-        // 2) Nome não corresponde ao usuário salvo
-        if (!usuario.getNome().equals(nome)) {
-            System.out.println("\n* Usuário ou senha inválidos! *");
+        // 3) Já existe usuário → valida senha usando o método da classe Usuario
+        if (!usuarioCarregado.validarSenha(senhaDigitada)) {
+            System.out.println("\n* Senha incorreta! *");
             return false;
         }
 
-        // 3) Aqui usamos seu metodo validarSenha corretamente
-        if (!usuario.validarSenha(senhaDigitada)) {
-            System.out.println("\n* Usuário ou senha inválidos! *");
-            return false;
-        }
-
-        // 4) Senha correta → login realizado
+        // 4) Login OK → atualiza os campos em memória
+        usuario = usuarioCarregado;
         sistema.setUsuarioLogado(usuario);
+
         System.out.println("\n* Login realizado com sucesso! Bem-vindo(a), " + nome + "! *");
         return true;
     }
+
+
 
 
 
@@ -161,8 +156,8 @@ public class MenuPrincipal {
                     definirOrcamento(); break;
                 case 11:
                     System.out.println("\n* Logout realizado com sucesso! Até Breve! *");
-                    sistema.setUsuarioLogado(null);
                     JsonRepositorio.salvar(sistema);
+                    sistema.setUsuarioLogado(null);
                     return; //Volta para o menu inicial
                 default:
                     System.out.println("\n* Opção inválida! Tente novamente. *");
@@ -553,3 +548,4 @@ public class MenuPrincipal {
 
 
 }
+

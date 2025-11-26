@@ -11,14 +11,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JsonRepositorio {
-
-    private static final String ARQUIVO = "dados.json";
 
     public static void salvar(SistemaFinanceiro sistema) {
         try {
@@ -30,6 +29,8 @@ public class JsonRepositorio {
                 estado.setSenhaUsuario(usuario.getSenha());
                 estado.setOrcamentoMensal(usuario.getOrcamentoMensal());
             }
+
+            String ARQUIVO = getArquivoUsuario(usuario.getNome());
 
             estado.setProximoId(sistema.getProximoId());
 
@@ -59,42 +60,71 @@ public class JsonRepositorio {
         }
     }
 
-    public static void carregar(SistemaFinanceiro sistema) {
-        try {
-            if (!Files.exists(Paths.get(ARQUIVO))) return;
+    public static Usuario carregarParaUsuario(SistemaFinanceiro sistema, String nomeUsuario) {
+        String arquivo = getArquivoUsuario(nomeUsuario);
 
+        Path path = Paths.get(arquivo);
+        if (!Files.exists(path)) {
+            // nunca logou antes → não tem arquivo
+            System.out.println("[INFO] Nenhum arquivo encontrado para o usuário " + nomeUsuario);
+            return null;
+        }
+
+        try (FileReader reader = new FileReader(arquivo)) {
             Gson gson = new Gson();
-            try (FileReader reader = new FileReader(ARQUIVO)) {
-                EstadoSistemaFinanceiro estado =
-                        gson.fromJson(reader, EstadoSistemaFinanceiro.class);
+            EstadoSistemaFinanceiro estado =
+                    gson.fromJson(reader, EstadoSistemaFinanceiro.class);
 
-                Usuario usuario = null;
-                if (estado.getNomeUsuario() != null) {
-                    usuario = new Usuario(estado.getNomeUsuario(), estado.getSenhaUsuario());
-                    usuario.setOrcamentoMensal(estado.getOrcamentoMensal());
-                }
-
-                ArrayList<Transacao> listaTransacoes = new ArrayList<>();
-                if (estado.getTransacoes() != null) {
-                    for (TransacaoPersistencia tp : estado.getTransacoes()) {
-                        Transacao t = new Transacao(
-                                tp.getId(),
-                                tp.getCategoria(),
-                                tp.getValor(),
-                                LocalDate.parse(tp.getData()),
-                                tp.getDescricao(),
-                                TipoTransacao.valueOf(tp.getTipo())
-                        );
-                        listaTransacoes.add(t);
-                    }
-                }
-
-                sistema.carregarEstado(usuario, listaTransacoes, estado.getProximoId());
-
-                System.out.println("\n[INFO] Dados carregados.");
+            if (estado == null) {
+                return null;
             }
-        } catch (Exception e) {
-            System.out.println("[ERRO] Ao carregar JSON: " + e.getMessage());
+
+            // Reconstrói o usuário a partir do JSON
+            Usuario usuario = new Usuario(
+                    estado.getNomeUsuario(),
+                    estado.getSenhaUsuario()
+            );
+            usuario.setOrcamentoMensal(estado.getOrcamentoMensal());
+
+            // Reconstrói as transações
+            ArrayList<Transacao> transacoes = new ArrayList<>();
+            if (estado.getTransacoes() != null) {
+                for (TransacaoPersistencia tp : estado.getTransacoes()) {
+                    LocalDate data = LocalDate.parse(tp.getData()); // yyyy-MM-dd
+                    TipoTransacao tipo = TipoTransacao.valueOf(tp.getTipo());
+
+                    Transacao t = new Transacao(
+                            tp.getId(),
+                            tp.getCategoria(),
+                            tp.getValor(),
+                            data,
+                            tp.getDescricao(),
+                            tipo
+                    );
+                    transacoes.add(t);
+                }
+            }
+
+            // Joga tudo para dentro do sistema
+            sistema.carregarEstado(usuario, transacoes, estado.getProximoId());
+
+            System.out.println("[INFO] Dados carregados do arquivo " + arquivo);
+            return usuario;
+
+        } catch (IOException e) {
+            System.out.println("[ERRO] Erro ao carregar dados: " + e.getMessage());
+            return null;
         }
     }
+
+
+    public static String getArquivoUsuario(String nomeUsuario) {
+        String nomeSanitizado = nomeUsuario
+                .toLowerCase()
+                .trim()
+                .replaceAll("\\s+", "_"); // troca espaços por underline
+
+        return "dados_" + nomeSanitizado + ".json";
+    }
+
 }
