@@ -1,0 +1,12 @@
+com/financeiro/enums/CategoriaDespesa.class
+com/financeiro/persistencia/TransacaoPersistencia.class
+com/financeiro/persistencia/JsonRepositorio.class
+com/financeiro/enums/TipoTransacao.class
+com/financeiro/enums/CategoriaReceita.class
+com/financeiro/menu/MenuPrincipal.class
+com/financeiro/persistencia/EstadoSistemaFinanceiro.class
+com/financeiro/model/Transacao.class
+com/financeiro/model/Usuario.class
+TesteGson.class
+com/financeiro/view/Main.class
+com/financeiro/service/SistemaFinanceiro.class
