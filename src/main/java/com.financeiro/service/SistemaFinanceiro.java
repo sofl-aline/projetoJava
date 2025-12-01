@@ -243,7 +243,7 @@ public class SistemaFinanceiro {
     }
 
 
-    //Metodo para gerar relatorio mensal
+    //Metodo para gerar relatorio Anual
     public void gerarRelatorioAnual(int ano) {
         double totalReceitas = 0.0;
         double totalDespesas = 0.0;

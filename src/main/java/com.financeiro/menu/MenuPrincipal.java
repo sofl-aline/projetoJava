@@ -3,7 +3,6 @@ package com.financeiro.menu;
 import com.financeiro.model.Usuario;
 import com.financeiro.enums.*;
 import com.financeiro.service.SistemaFinanceiro;
-import javax.swing.*;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
